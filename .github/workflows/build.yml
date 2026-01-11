@@ -6,20 +6,33 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout
+      uses: actions/checkout@v4
 
-    - uses: actions/setup-python@v5
+    - name: Setup Python
+      uses: actions/setup-python@v5
       with:
         python-version: "3.10"
 
-    - name: Install deps
+    - name: Install system dependencies
       run: |
         sudo apt update
-        sudo apt install -y openjdk-17-jdk zip unzip
-        pip install buildozer cython
+        sudo apt install -y \
+          openjdk-17-jdk \
+          libffi-dev \
+          libssl-dev \
+          libncurses5 \
+          libstdc++6 \
+          zlib1g-dev \
+          unzip zip
+
+    - name: Install Python tools
+      run: |
+        python -m pip install --upgrade pip
+        pip install cython==0.29.36 buildozer
 
     - name: Build APK
       run: |
@@ -28,5 +41,5 @@ jobs:
     - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
-        name: Slayer-AdBlocker
+        name: Slayer-AdBlocker-APK
         path: bin/*.apk
